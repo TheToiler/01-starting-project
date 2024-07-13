@@ -1,26 +1,31 @@
-import { Component } from '@angular/core';
-import { DUMMY_USERS } from '../dummy-users';
-import { NgFor } from '@angular/common';
+import { Component, input, output, computed } from '@angular/core';
 
-const randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
+import { CardComponent } from "../shared/card/card.component";
+
+interface selectedUserInterface {
+  id: string,
+  name: string,
+  avatar: string
+}
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [NgFor],
+  imports: [CardComponent,],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css',
 })
+
 export class UserComponent {
-  selectedUser = DUMMY_USERS[randomIndex];
-  allUsers = DUMMY_USERS;
+  user = input.required<selectedUserInterface>()
+  selected = input<boolean>(false);
+  select = output<selectedUserInterface>()
 
-  get imagePath(): string {
-    return 'assets/users/' + this.selectedUser.avatar;
-  }
-
-  onSelectUser() {
-    const randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
-    this.selectedUser = DUMMY_USERS[randomIndex];
+  imagePath = computed(() => {
+    return 'assets/users/' + this.user().avatar
+  });
+  
+  onSelectUser(selectedUser: selectedUserInterface) {
+    this.select.emit(selectedUser)
   }
 }
